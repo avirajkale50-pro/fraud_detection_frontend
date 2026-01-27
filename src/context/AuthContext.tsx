@@ -16,7 +16,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(() => {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -25,10 +28,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentToken = localStorage.getItem('token');
         if (!currentToken) {
             setUser(null);
+            localStorage.removeItem('user');
             return;
         }
-        // Token exists, user data will be set from login response
-        // No need to fetch from server since /api/user endpoint doesn't exist
+        // Restore user from localStorage if available
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+        }
     };
 
     useEffect(() => {
@@ -57,14 +64,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
                 // Set user data from login response
                 // Note: Login response only provides id and token, not full user details
-                setUser({
+                const userData = {
                     id: response.data.id,
                     name: email.split('@')[0], // Use email prefix as name
                     email: email,
                     mobile: '', // Not available from login response
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
-                });
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
+                setUser(userData);
             } else {
                 throw new Error('No token received from server');
             }
@@ -102,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setToken(null);
             setUser(null);
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
     };
 

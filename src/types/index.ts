@@ -42,7 +42,7 @@ export interface UserResponse {
 }
 
 // Transaction types
-export type TransactionMode = 'UPI' | 'CARD' | 'NET_BANKING' | 'WALLET';
+export type TransactionMode = 'UPI' | 'CARD' | 'NETBANKING' | 'WALLET';
 export type TransactionDecision = 'ALLOW' | 'MFA_REQUIRED' | 'BLOCK';
 export type RiskFactor = 'AMOUNT_DEVIATION' | 'FREQUENCY_SPIKE' | 'NEW_MODE' | 'TIME_DEVIATION';
 

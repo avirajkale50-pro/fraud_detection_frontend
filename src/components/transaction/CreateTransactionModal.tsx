@@ -9,16 +9,17 @@ import RiskBadge from './RiskBadge';
 interface CreateTransactionModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onTransactionCreated?: () => void;
 }
 
-const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose }) => {
+const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onTransactionCreated }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState<TransactionMode>('UPI');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState<CreateTransactionResponse | null>(null);
 
-    const modes: TransactionMode[] = ['UPI', 'CARD', 'NET_BANKING', 'WALLET'];
+    const modes: TransactionMode[] = ['UPI', 'CARD', 'NETBANKING'];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,8 +46,13 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
         setAmount('');
         setMode('UPI');
         setError('');
+        const hadResult = result !== null;
         setResult(null);
         onClose();
+        // Call the callback after closing if a transaction was created
+        if (hadResult && onTransactionCreated) {
+            onTransactionCreated();
+        }
     };
 
     return (
