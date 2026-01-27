@@ -2,17 +2,43 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
+import { validateEmail, validatePassword } from '../../utils/validation';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const { login, isLoading } = useAuth();
     const navigate = useNavigate();
+
+    const handleEmailBlur = () => {
+        const validation = validateEmail(email);
+        setEmailError(validation.isValid ? '' : validation.error || '');
+    };
+
+    const handlePasswordBlur = () => {
+        const validation = validatePassword(password);
+        setPasswordError(validation.isValid ? '' : validation.error || '');
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        // Validate all fields
+        const emailValidation = validateEmail(email);
+        const passwordValidation = validatePassword(password);
+
+        setEmailError(emailValidation.isValid ? '' : emailValidation.error || '');
+        setPasswordError(passwordValidation.isValid ? '' : passwordValidation.error || '');
+
+        // If any validation fails, don't submit
+        if (!emailValidation.isValid || !passwordValidation.isValid) {
+            return;
+        }
+
         try {
             await login(email, password);
             navigate('/dashboard');
@@ -45,11 +71,18 @@ const LoginPage: React.FC = () => {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow"
+                                className={`mt-1 block w-full rounded-lg border ${emailError ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
                                 placeholder="name@example.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    if (emailError) setEmailError('');
+                                }}
+                                onBlur={handleEmailBlur}
                             />
+                            {emailError && (
+                                <p className="mt-1 text-sm text-red-600">{emailError}</p>
+                            )}
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -61,11 +94,18 @@ const LoginPage: React.FC = () => {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow"
+                                className={`mt-1 block w-full rounded-lg border ${passwordError ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
                                 placeholder="••••••••"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    if (passwordError) setPasswordError('');
+                                }}
+                                onBlur={handlePasswordBlur}
                             />
+                            {passwordError && (
+                                <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+                            )}
                         </div>
                     </div>
 

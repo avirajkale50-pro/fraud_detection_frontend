@@ -1,9 +1,8 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
-    return (
+    return (        
         <div className="bg-white">
             {/* Hero */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 lg:pt-32">
@@ -26,46 +25,69 @@ const HomePage: React.FC = () => {
 
                         <div className="grid grid-cols-3 gap-8">
                             <div>
-                                <h3 className="text-3xl font-bold mb-1">72</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Templates for your finances</p>
+                                <h3 className="text-3xl font-bold mb-1"> Level 1</h3>
+                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Evaluates transaction risk level</p>
                             </div>
                             <div>
-                                <div className="w-8 h-8 flex items-center justify-center border border-black mb-3 text-black">
-                                    <Zap className="w-4 h-4" />
-                                </div>
-                                <h3 className="text-3xl font-bold mb-1">6,1K</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Use assistant<br /> every hour</p>
+                                <h3 className="text-3xl font-bold mb-1">Level 2</h3>
+                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Analyzes time-based transaction patterns</p>
                             </div>
                             <div>
-                                <div className="w-8 h-8 border border-gray-300 mb-3 block"></div>
-                                <h3 className="text-3xl font-bold mb-1">35K+</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Users in the<br /> last month</p>
+                                <h3 className="text-3xl font-bold mb-1">Level 3</h3>
+                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Makes final intelligent validation</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Abstract Graphic / Right Side */}
+                    {/* Transaction Log / Right Side */}
                     <div className="relative hidden lg:block h-full min-h-[500px]">
-                        <div className="absolute top-0 right-0 p-8 border border-gray-100 rounded-lg shadow-sm bg-white w-full max-w-md ml-auto">
-                            {/* Mock Graph */}
-                            <div className="flex items-end justify-between h-40 gap-2 mb-8">
-                                {[40, 70, 45, 90, 60, 80, 50].map((h, i) => (
-                                    <div key={i} className={`w-full rounded-t-sm ${i === 3 ? 'bg-black' : 'bg-gray-100'}`} style={{ height: `${h}%` }}></div>
-                                ))}
+                        <div className="absolute top-0 right-0 p-6 border border-gray-300 rounded-lg shadow-sm bg-white w-full max-w-md ml-auto">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold text-gray-900">Transactions Overview</h3>
                             </div>
 
-                            <div className="p-6 bg-accent rounded-sm relative overflow-hidden group">
-                                <div className="relative z-10">
-                                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
-                                        <ShieldCheck className="w-5 h-5 text-black" />
-                                    </div>
-                                    <h4 className="text-2xl font-bold mb-2">Secure Base</h4>
-                                    <p className="text-sm text-gray-800">Bank-grade encryption for every transaction.</p>
+                            {/* Scrolling Transaction Log */}
+                            <div className="h-[420px] overflow-hidden relative">
+                                <div className="absolute inset-0 animate-scroll">
+                                    {[
+                                        { id: 'TXN-4521', amount: '₹245.00', status: 'approved', time: '2m ago' },
+                                        { id: 'TXN-4522', amount: '₹1,890.50', status: 'flagged', time: '3m ago' },
+                                        { id: 'TXN-4523', amount: '₹67.25', status: 'approved', time: '5m ago' },
+                                        { id: 'TXN-4524', amount: '₹3,200.00', status: 'flagged', time: '7m ago' },
+                                        { id: 'TXN-4525', amount: '₹156.80', status: 'approved', time: '9m ago' },
+                                        { id: 'TXN-4526', amount: '₹892.00', status: 'approved', time: '11m ago' },
+                                        { id: 'TXN-4527', amount: '₹45.99', status: 'approved', time: '13m ago' },
+                                        { id: 'TXN-4528', amount: '₹5,600.00', status: 'flagged', time: '15m ago' },
+                                        { id: 'TXN-4529', amount: '₹234.50', status: 'approved', time: '17m ago' },
+                                        { id: 'TXN-4530', amount: '₹789.00', status: 'approved', time: '19m ago' },
+                                    ].map((txn, i) => (
+                                        <div
+                                            key={i}
+                                            className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-all"
+                                        >
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-xs font-mono text-gray-500">{txn.id}</span>
+                                                <span className="text-xs text-gray-400">{txn.time}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm font-semibold text-gray-900">{txn.amount}</span>
+                                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${txn.status === 'approved'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-orange-100 text-orange-700'
+                                                    }`}>
+                                                    {txn.status === 'approved' ? '✓ Approved' : '⚠ Flagged'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
+                                <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
