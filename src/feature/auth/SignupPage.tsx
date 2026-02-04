@@ -1,84 +1,33 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { validateEmail, validatePassword, validateName, validateMobile } from '../../utils/validation';
+import { APP_CONFIG } from '../../constants/app';
+import { ROUTES } from '../../constants/routes';
+
+interface SignupFormData {
+    name: string;
+    email: string;
+    mobile: string;
+    password: string;
+}
 
 const SignupPage: React.FC = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        mobile: '',
-        password: ''
-    });
-    const [error, setError] = useState('');
-    const [fieldErrors, setFieldErrors] = useState({
-        name: '',
-        email: '',
-        mobile: '',
-        password: ''
+    const { register, handleSubmit, formState: { errors }, setError } = useForm<SignupFormData>({
+        mode: 'onBlur',
     });
     const { signup, isLoading } = useAuth();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        // Clear error for this field when user types
-        if (fieldErrors[name as keyof typeof fieldErrors]) {
-            setFieldErrors({ ...fieldErrors, [name]: '' });
-        }
-    };
-
-    const handleBlur = (field: keyof typeof formData) => {
-        let validation;
-        switch (field) {
-            case 'name':
-                validation = validateName(formData.name);
-                break;
-            case 'email':
-                validation = validateEmail(formData.email);
-                break;
-            case 'mobile':
-                validation = validateMobile(formData.mobile);
-                break;
-            case 'password':
-                validation = validatePassword(formData.password);
-                break;
-        }
-        setFieldErrors({ ...fieldErrors, [field]: validation.isValid ? '' : validation.error || '' });
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-
-        // Validate all fields
-        const nameValidation = validateName(formData.name);
-        const emailValidation = validateEmail(formData.email);
-        const mobileValidation = validateMobile(formData.mobile);
-        const passwordValidation = validatePassword(formData.password);
-
-        const errors = {
-            name: nameValidation.isValid ? '' : nameValidation.error || '',
-            email: emailValidation.isValid ? '' : emailValidation.error || '',
-            mobile: mobileValidation.isValid ? '' : mobileValidation.error || '',
-            password: passwordValidation.isValid ? '' : passwordValidation.error || '',
-        };
-
-        setFieldErrors(errors);
-
-        // If any validation fails, don't submit
-        if (!nameValidation.isValid || !emailValidation.isValid ||
-            !mobileValidation.isValid || !passwordValidation.isValid) {
-            return;
-        }
-
+    const onSubmit = async (data: SignupFormData) => {
         try {
-            await signup(formData);
-            navigate('/login'); // Redirect to login after successful signup
+            await signup(data);
+            navigate(ROUTES.LOGIN);
         } catch (err) {
-            setError('Signup failed. Please try again.');
+            setError('root', { message: 'Signup failed. Please try again.' });
         }
     };
 
@@ -86,15 +35,15 @@ const SignupPage: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-12">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-sm border border-gray-100">
                 <div className="text-center">
-                    <Link to="/" className="inline-flex items-center gap-2 group mb-6">
+                    <Link to={ROUTES.HOME} className="inline-flex items-center gap-2 group mb-6">
                         <div className="bg-black text-white p-1 rounded-md">
                             <ShieldCheck className="w-6 h-6" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-black">PayShield</span>
+                        <span className="text-xl font-bold tracking-tight text-black">{APP_CONFIG.NAME}</span>
                     </Link>
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900">Create your account</h2>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -102,17 +51,19 @@ const SignupPage: React.FC = () => {
                             </label>
                             <input
                                 id="name"
-                                name="name"
                                 type="text"
-                                required
-                                className={`mt-1 block w-full rounded-lg border ${fieldErrors.name ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
+                                className={`mt-1 block w-full rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
                                 placeholder="John Doe"
-                                value={formData.name}
-                                onChange={handleChange}
-                                onBlur={() => handleBlur('name')}
+                                {...register('name', {
+                                    required: 'Name is required',
+                                    validate: (value) => {
+                                        const validation = validateName(value);
+                                        return validation.isValid || validation.error || 'Invalid name';
+                                    }
+                                })}
                             />
-                            {fieldErrors.name && (
-                                <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>
+                            {errors.name && (
+                                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
                             )}
                         </div>
                         <div>
@@ -121,18 +72,20 @@ const SignupPage: React.FC = () => {
                             </label>
                             <input
                                 id="email"
-                                name="email"
                                 type="email"
                                 autoComplete="email"
-                                required
-                                className={`mt-1 block w-full rounded-lg border ${fieldErrors.email ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
+                                className={`mt-1 block w-full rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
                                 placeholder="name@example.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                onBlur={() => handleBlur('email')}
+                                {...register('email', {
+                                    required: 'Email is required',
+                                    validate: (value) => {
+                                        const validation = validateEmail(value);
+                                        return validation.isValid || validation.error || 'Invalid email';
+                                    }
+                                })}
                             />
-                            {fieldErrors.email && (
-                                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
                             )}
                         </div>
                         <div>
@@ -141,37 +94,55 @@ const SignupPage: React.FC = () => {
                             </label>
                             <input
                                 id="mobile"
-                                name="mobile"
                                 type="tel"
-                                required
-                                className={`mt-1 block w-full rounded-lg border ${fieldErrors.mobile ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
+                                className={`mt-1 block w-full rounded-lg border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
                                 placeholder="0123456789"
-                                value={formData.mobile}
-                                onChange={handleChange}
-                                onBlur={() => handleBlur('mobile')}
+                                {...register('mobile', {
+                                    required: 'Mobile number is required',
+                                    validate: (value) => {
+                                        const validation = validateMobile(value);
+                                        return validation.isValid || validation.error || 'Invalid mobile number';
+                                    }
+                                })}
                             />
-                            {fieldErrors.mobile && (
-                                <p className="mt-1 text-sm text-red-600">{fieldErrors.mobile}</p>
+                            {errors.mobile && (
+                                <p className="mt-1 text-sm text-red-600">{errors.mobile.message}</p>
                             )}
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className={`mt-1 block w-full rounded-lg border ${fieldErrors.password ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                                onBlur={() => handleBlur('password')}
-                            />
-                            {fieldErrors.password && (
-                                <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    autoComplete="new-password"
+                                    className={`mt-1 block w-full rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
+                                    placeholder="••••••••"
+                                    {...register('password', {
+                                        required: 'Password is required',
+                                        validate: (value) => {
+                                            const validation = validatePassword(value);
+                                            return validation.isValid || validation.error || 'Invalid password';
+                                        }
+                                    })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="w-5 h-5" />
+                                    ) : (
+                                        <Eye className="w-5 h-5" />
+                                    )}
+                                </button>
+                            </div>
+                            {errors.password && (
+                                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
                             )}
                             <p className="mt-1 text-xs text-gray-500">
                                 Must be 8+ characters with uppercase, lowercase, number, and special character
@@ -179,8 +150,8 @@ const SignupPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="text-red-500 text-sm">{error}</div>
+                    {errors.root && (
+                        <div className="text-red-500 text-sm">{errors.root.message}</div>
                     )}
 
                     <div>
@@ -195,7 +166,7 @@ const SignupPage: React.FC = () => {
 
                     <div className="text-center text-sm">
                         <span className="text-gray-500">Already have an account? </span>
-                        <Link to="/login" className="font-medium text-black hover:underline">Sign in</Link>
+                        <Link to={ROUTES.LOGIN} className="font-medium text-black hover:underline">Sign in</Link>
                     </div>
                 </form>
             </div>

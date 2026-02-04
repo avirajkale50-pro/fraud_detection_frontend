@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import Modal from '../common/Modal';
-import { api } from '../../service/api';
 import type { TransactionMode, CreateTransactionResponse } from '../../types';
 import { Loader2, TrendingUp, CreditCard } from 'lucide-react';
 import DecisionBadge from './DecisionBadge';
 import RiskBadge from './RiskBadge';
+import { useCreateTransaction } from '../../hooks/useCreateTransaction';
+import { formatEnumValue } from '../../utils/formatters';
 
 interface CreateTransactionModalProps {
     isOpen: boolean;
@@ -12,44 +14,45 @@ interface CreateTransactionModalProps {
     onTransactionCreated?: () => void;
 }
 
+interface TransactionFormData {
+    amount: string;
+    mode: TransactionMode;
+}
+
 const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onTransactionCreated }) => {
-    const [amount, setAmount] = useState('');
-    const [mode, setMode] = useState<TransactionMode>('UPI');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<TransactionFormData>({
+        defaultValues: {
+            amount: '',
+            mode: 'UPI'
+        }
+    });
     const [result, setResult] = useState<CreateTransactionResponse | null>(null);
+    const createTransactionMutation = useCreateTransaction();
 
     const modes: TransactionMode[] = ['UPI', 'CARD', 'NETBANKING'];
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
+    const onSubmit = async (data: TransactionFormData) => {
         setResult(null);
-        setIsLoading(true);
 
-        try {
-            const response = await api.createTransaction({
-                amount: parseFloat(amount),
-                mode,
-            });
-            setResult(response);
-            setAmount('');
-            setMode('UPI');
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to create transaction. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+        createTransactionMutation.mutate(
+            {
+                amount: parseFloat(data.amount),
+                mode: data.mode,
+            },
+            {
+                onSuccess: (response) => {
+                    setResult(response);
+                    reset();
+                },
+            }
+        );
     };
 
     const handleClose = () => {
-        setAmount('');
-        setMode('UPI');
-        setError('');
+        reset();
         const hadResult = result !== null;
         setResult(null);
         onClose();
-        // Call the callback after closing if a transaction was created
         if (hadResult && onTransactionCreated) {
             onTransactionCreated();
         }
@@ -58,7 +61,7 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Create Transaction">
             {!result ? (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Amount */}
                     <div>
                         <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
@@ -73,11 +76,12 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                required
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
                                 className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-gray-900"
                                 placeholder="0.00"
+                                {...register('amount', {
+                                    required: 'Amount is required',
+                                    min: { value: 0.01, message: 'Amount must be greater than 0' }
+                                })}
                             />
                         </div>
                     </div>
@@ -93,31 +97,33 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
                             </div>
                             <select
                                 id="mode"
-                                value={mode}
-                                onChange={(e) => setMode(e.target.value as TransactionMode)}
                                 className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-gray-900 appearance-none bg-white"
+                                {...register('mode')}
                             >
                                 {modes.map((m) => (
                                     <option key={m} value={m}>
-                                        {m.replace('_', ' ')}
+                                        {formatEnumValue(m)}
                                     </option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
-                            {error}
+                    {/* Error Display */}
+                    {createTransactionMutation.error && (
+                        <div className="text-red-500 text-sm bg-red-50 p-2 rounded-md border border-red-100">
+                            {createTransactionMutation.error instanceof Error
+                                ? createTransactionMutation.error.message
+                                : 'Failed to create transaction. Please try again.'}
                         </div>
                     )}
 
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={createTransactionMutation.isPending}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
                     >
-                        {isLoading ? (
+                        {createTransactionMutation.isPending ? (
                             <>
                                 <Loader2 className="w-4 h-4 animate-spin" />
                                 Processing...
@@ -137,29 +143,29 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
                             </svg>
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">Transaction Created</h3>
-                        <p className="text-sm text-gray-500">Transaction ID: #{result.data.txn_id}</p>
+                        <p className="text-sm text-gray-500">Transaction ID: #{result.id}</p>
                     </div>
 
                     {/* Result Details */}
                     <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700">Decision</span>
-                            <DecisionBadge decision={result.data.decision} />
+                            <DecisionBadge decision={result.decision} />
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700">Risk Score</span>
-                            <RiskBadge score={result.data.risk_score} />
+                            <RiskBadge score={result.risk_score} />
                         </div>
-                        {result.data.triggered_factors.length > 0 && (
+                        {result.triggered_factors.length > 0 && (
                             <div>
                                 <span className="text-sm font-medium text-gray-700 block mb-2">Triggered Factors</span>
                                 <div className="flex flex-wrap gap-2">
-                                    {result.data.triggered_factors.map((factor) => (
+                                    {result.triggered_factors.map((factor) => (
                                         <span
                                             key={factor}
                                             className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded border border-orange-200"
                                         >
-                                            {factor.replace('_', ' ')}
+                                            {formatEnumValue(factor)}
                                         </span>
                                     ))}
                                 </div>
@@ -173,9 +179,9 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
                     >
                         Close
                     </button>
-                </div>
+                </div >
             )}
-        </Modal>
+        </Modal >
     );
 };
 

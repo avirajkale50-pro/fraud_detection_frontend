@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { User, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
 
 const UserProfileDropdown: React.FC = () => {
     const { user, logout } = useAuth();
@@ -27,7 +28,7 @@ const UserProfileDropdown: React.FC = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigate('/login');
+        navigate(ROUTES.LOGIN);
     };
 
     if (!user) return null;
@@ -67,23 +68,6 @@ const UserProfileDropdown: React.FC = () => {
                                 <p className="text-sm font-semibold text-gray-900 truncate">{user.name || 'User'}</p>
                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Details */}
-                    <div className="px-4 py-3 border-b border-gray-100">
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-xs">
-                                <User className="w-3.5 h-3.5 text-gray-400" />
-                                <span className="text-gray-500">ID:</span>
-                                <span className="text-gray-900 font-mono">{user.id}</span>
-                            </div>
-                            {user.mobile && (
-                                <div className="flex items-center gap-2 text-xs">
-                                    <span className="text-gray-500">Mobile:</span>
-                                    <span className="text-gray-900">{user.mobile}</span>
-                                </div>
-                            )}
                         </div>
                     </div>
 

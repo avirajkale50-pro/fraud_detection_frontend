@@ -1,6 +1,6 @@
 import React from 'react';
 import type { TransactionDecision } from '../../types';
-import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, Flag } from 'lucide-react';
 
 interface DecisionBadgeProps {
     decision: TransactionDecision;
@@ -14,6 +14,13 @@ const DecisionBadge: React.FC<DecisionBadgeProps> = ({ decision }) => {
             border: 'border-green-200',
             icon: CheckCircle,
             label: 'Allowed',
+        },
+        FLAG: {
+            bg: 'bg-orange-100',
+            text: 'text-orange-800',
+            border: 'border-orange-200',
+            icon: Flag,
+            label: 'Flagged for Review',
         },
         MFA_REQUIRED: {
             bg: 'bg-yellow-100',

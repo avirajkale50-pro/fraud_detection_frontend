@@ -16,35 +16,25 @@ export interface SignupRequest {
     password: string;
 }
 
+export interface SignupResponse {
+    message: string;
+    id: number;
+}
+
 export interface LoginRequest {
     email: string;
     password: string;
 }
 
-export interface AuthResponse {
-    data: {
-        message: string;
-        id: number;
-        token?: string;
-    };
-}
-
-export interface UserResponse {
-    data: {
-        message: string;
-        id: number;
-        name: string;
-        email: string;
-        mobile: string;
-        created_at: string;
-        updated_at: string;
-    };
+export interface LoginResponse {
+    message: string;
+    token: string;
 }
 
 // Transaction types
-export type TransactionMode = 'UPI' | 'CARD' | 'NETBANKING' | 'WALLET';
-export type TransactionDecision = 'ALLOW' | 'MFA_REQUIRED' | 'BLOCK';
-export type RiskFactor = 'AMOUNT_DEVIATION' | 'FREQUENCY_SPIKE' | 'NEW_MODE' | 'TIME_DEVIATION';
+export type TransactionMode = 'UPI' | 'CARD' | 'NETBANKING';
+export type TransactionDecision = 'ALLOW' | 'FLAG' | 'BLOCK' | 'MFA_REQUIRED';
+export type TriggerFactor = 'AMOUNT_DEVIATION' | 'FREQUENCY_SPIKE' | 'NEW_MODE' | 'TIME_ANOMALY';
 
 export interface Transaction {
     id: number;
@@ -52,7 +42,7 @@ export interface Transaction {
     amount: number;
     mode: TransactionMode;
     risk_score: number;
-    triggered_factors: RiskFactor[];
+    triggered_factors: TriggerFactor[];
     decision: TransactionDecision;
     amount_deviation_score?: number;
     frequency_deviation_score?: number;
@@ -68,24 +58,46 @@ export interface CreateTransactionRequest {
 }
 
 export interface CreateTransactionResponse {
-    data: {
-        txn_id: number;
-        decision: TransactionDecision;
-        risk_score: number;
-        triggered_factors: RiskFactor[];
-    };
+    id: number;
+    decision: TransactionDecision;
+    risk_score: number;
+    triggered_factors: TriggerFactor[];
+    created_at: string;
 }
 
-export interface TransactionListResponse {
-    data: Transaction[];
+// Pagination
+export interface PaginationParams {
+    limit?: number;
+    offset?: number;
 }
 
-export interface TransactionDetailResponse {
-    data: Transaction;
+// Bulk Upload types
+export type JobStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
+export interface BulkUploadResponse {
+    job_id: string;
+    status: 'PENDING';
+}
+
+export interface BulkUploadProgress {
+    total: number;
+    processed: number;
+    success: number;
+    failed: number;
+    percent: number;
+}
+
+export interface BulkUploadStatusResponse {
+    job_id: string;
+    status: JobStatus;
+    progress: BulkUploadProgress;
 }
 
 export interface LogoutResponse {
-    data: {
-        message: string;
-    };
+    message: string;
+}
+
+// Error response
+export interface ErrorResponse {
+    error: string;
 }

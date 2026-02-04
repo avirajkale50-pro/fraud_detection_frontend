@@ -1,82 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../../service/api';
-import type { Transaction } from '../../types';
-import { Loader2, AlertCircle, ArrowLeft, Calendar, CreditCard, TrendingUp, Activity } from 'lucide-react';
+import { ArrowLeft, Calendar, CreditCard, TrendingUp, Activity } from 'lucide-react';
 import DecisionBadge from '../../components/transaction/DecisionBadge';
 import RiskBadge from '../../components/transaction/RiskBadge';
+import { useTransaction } from '../../hooks/useTransaction';
+import LoadingState from '../../components/common/LoadingState';
+import ErrorState from '../../components/common/ErrorState';
+import { formatDate, formatCurrency, formatEnumValue } from '../../utils/formatters';
+import { ROUTES } from '../../constants/routes';
 
 const TransactionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [transaction, setTransaction] = useState<Transaction | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    useEffect(() => {
-        if (id) {
-            fetchTransaction(parseInt(id));
-        }
-    }, [id]);
-
-    const fetchTransaction = async (transactionId: number) => {
-        setIsLoading(true);
-        setError('');
-        try {
-            const response = await api.getTransaction(transactionId);
-            setTransaction(response.data);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to load transaction details');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        }).format(date);
-    };
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
-    };
+    const { data: transaction, isLoading, error } = useTransaction(id ? parseInt(id) : undefined);
 
     if (isLoading) {
-        return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">Loading transaction details...</p>
-                </div>
-            </div>
-        );
+        return <LoadingState message="Loading transaction details..." />;
     }
 
     if (error || !transaction) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="text-center">
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Error Loading Transaction</h3>
-                    <p className="text-gray-500 mb-4">{error || 'Transaction not found'}</p>
-                    <button
-                        onClick={() => navigate('/dashboard')}
-                        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all"
-                    >
-                        Back to Dashboard
-                    </button>
-                </div>
-            </div>
+            <ErrorState
+                error={error}
+                onRetry={() => navigate(ROUTES.DASHBOARD)}
+                title="Error Loading Transaction"
+                defaultMessage="Transaction not found"
+            />
         );
     }
 
@@ -84,7 +33,7 @@ const TransactionDetail: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             {/* Back Button */}
             <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(ROUTES.DASHBOARD)}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
             >
                 <ArrowLeft className="w-4 h-4" />
@@ -114,7 +63,7 @@ const TransactionDetail: React.FC = () => {
                         </div>
                         <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide">Payment Mode</p>
-                            <p className="text-sm font-semibold text-gray-900">{transaction.mode.replace('_', ' ')}</p>
+                            <p className="text-sm font-semibold text-gray-900">{formatEnumValue(transaction.mode)}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -123,7 +72,7 @@ const TransactionDetail: React.FC = () => {
                         </div>
                         <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide">Created At</p>
-                            <p className="text-sm font-semibold text-gray-900">{formatDate(transaction.created_at)}</p>
+                            <p className="text-sm font-semibold text-gray-900">{formatDate(transaction.created_at, 'long')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -240,7 +189,7 @@ const TransactionDetail: React.FC = () => {
                                 key={factor}
                                 className="px-4 py-2 bg-orange-50 text-orange-800 text-sm font-medium rounded-lg border border-orange-200"
                             >
-                                {factor.replace('_', ' ')}
+                                {formatEnumValue(factor)}
                             </div>
                         ))}
                     </div>

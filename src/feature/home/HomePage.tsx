@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
+import { MOCK_TRANSACTIONS } from '../../constants/app';
 
 const HomePage: React.FC = () => {
-    return (        
+    return (
         <div className="bg-white">
             {/* Hero */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 lg:pt-32">
@@ -14,7 +16,7 @@ const HomePage: React.FC = () => {
 
                         <div className="flex items-center gap-6 mb-16">
                             <div className="flex items-center gap-3">
-                                <Link to="/login" className="px-8 py-4 text-sm font-medium border border-gray-300 hover:border-black transition-colors rounded-lg">
+                                <Link to={ROUTES.LOGIN} className="px-8 py-4 text-sm font-medium border border-gray-300 hover:border-black transition-colors rounded-lg">
                                     Try it!
                                 </Link>
                             </div>
@@ -39,7 +41,7 @@ const HomePage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Transaction Log / Right Side */}
+                    {/* Transaction Log - animation*/}
                     <div className="relative hidden lg:block h-full min-h-[500px]">
                         <div className="absolute top-0 right-0 p-6 border border-gray-300 rounded-lg shadow-sm bg-white w-full max-w-md ml-auto">
                             <div className="flex items-center justify-between mb-4">
@@ -49,20 +51,9 @@ const HomePage: React.FC = () => {
                             {/* Scrolling Transaction Log */}
                             <div className="h-[420px] overflow-hidden relative">
                                 <div className="absolute inset-0 animate-scroll">
-                                    {[
-                                        { id: 'TXN-4521', amount: '₹245.00', status: 'approved', time: '2m ago' },
-                                        { id: 'TXN-4522', amount: '₹1,890.50', status: 'flagged', time: '3m ago' },
-                                        { id: 'TXN-4523', amount: '₹67.25', status: 'approved', time: '5m ago' },
-                                        { id: 'TXN-4524', amount: '₹3,200.00', status: 'flagged', time: '7m ago' },
-                                        { id: 'TXN-4525', amount: '₹156.80', status: 'approved', time: '9m ago' },
-                                        { id: 'TXN-4526', amount: '₹892.00', status: 'approved', time: '11m ago' },
-                                        { id: 'TXN-4527', amount: '₹45.99', status: 'approved', time: '13m ago' },
-                                        { id: 'TXN-4528', amount: '₹5,600.00', status: 'flagged', time: '15m ago' },
-                                        { id: 'TXN-4529', amount: '₹234.50', status: 'approved', time: '17m ago' },
-                                        { id: 'TXN-4530', amount: '₹789.00', status: 'approved', time: '19m ago' },
-                                    ].map((txn, i) => (
+                                    {MOCK_TRANSACTIONS.map((txn) => (
                                         <div
-                                            key={i}
+                                            key={txn.id}
                                             className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-all"
                                         >
                                             <div className="flex items-center justify-between mb-1">
@@ -86,8 +77,6 @@ const HomePage: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </div>
