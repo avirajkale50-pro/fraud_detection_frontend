@@ -49,7 +49,7 @@ const TransactionDetail: React.FC = () => {
                         </h1>
                         <p className="text-gray-500">Transaction #{transaction.id}</p>
                     </div>
-                    <div className="text-right space-y-2">
+                    <div className="text-right space-y-2 flex flex-col gap-2">
                         <DecisionBadge decision={transaction.decision} />
                         <RiskBadge score={transaction.risk_score} />
                     </div>
@@ -100,9 +100,9 @@ const TransactionDetail: React.FC = () => {
                         <span className="text-sm font-medium text-gray-700">Overall Risk Score</span>
                         <span className="text-2xl font-bold text-gray-900">{transaction.risk_score}/100</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
-                            className={`h-3 rounded-full transition-all ${transaction.risk_score <= 40
+                            className={`h-2.5 rounded-full transition-all ${transaction.risk_score <= 40
                                 ? 'bg-green-500'
                                 : transaction.risk_score <= 70
                                     ? 'bg-yellow-500'
