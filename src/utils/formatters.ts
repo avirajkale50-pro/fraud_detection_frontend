@@ -30,12 +30,12 @@ export const formatDate = (dateString: string | undefined | null, format: 'short
     return new Intl.DateTimeFormat('en-US', options).format(date);
 };
 
-export const formatCurrency = (amount: number | undefined | null, currency: string = 'USD'): string => {
+export const formatCurrency = (amount: number | undefined | null, currency: string = 'INR'): string => {
     if (amount === null || amount === undefined || isNaN(amount)) {
         return 'N/A';
     }
 
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency,
     }).format(amount);

@@ -1,7 +1,4 @@
-/**
- * Application-level constants
- * Single source of truth for app metadata
- */
+
 
 export const APP_CONFIG = {
     NAME: 'PayShield',

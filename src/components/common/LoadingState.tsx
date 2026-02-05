@@ -5,10 +5,6 @@ interface LoadingStateProps {
     message?: string;
 }
 
-/**
- * Reusable loading state component
- * Displays a centered spinner with optional message
- */
 const LoadingState: React.FC<LoadingStateProps> = ({ message = 'Loading...' }) => {
     return (
         <div className="min-h-[60vh] flex items-center justify-center">
