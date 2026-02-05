@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowRight, Calendar, DollarSign, Upload } from 'lucide-react';
+import { ArrowRight, Calendar, DollarSign, Upload, CheckCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { Transaction } from '../../types';
+import type { Transaction, BulkUploadResponse } from '../../types';
 import DecisionBadge from '../../components/transaction/DecisionBadge';
 import RiskBadge from '../../components/transaction/RiskBadge';
 import { useTransactions } from '../../hooks/useTransactions';
@@ -9,7 +9,6 @@ import LoadingState from '../../components/common/LoadingState';
 import ErrorState from '../../components/common/ErrorState';
 import PaginationControls from '../../components/common/PaginationControls';
 import BulkUploadModal from '../../components/transaction/BulkUploadModal';
-import UploadStatusTracker from '../../components/transaction/UploadStatusTracker';
 import { formatDate, formatCurrency, formatEnumValue } from '../../utils/formatters';
 import { ROUTES } from '../../constants/routes';
 
@@ -22,7 +21,7 @@ const TransactionList: React.FC = () => {
 
     // Bulk upload state
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const [uploadJobId, setUploadJobId] = useState<string | null>(null);
+    const [uploadResult, setUploadResult] = useState<BulkUploadResponse | null>(null);
 
     // Calculate offset for pagination
     const offset = (currentPage - 1) * pageSize;
@@ -44,11 +43,8 @@ const TransactionList: React.FC = () => {
         setCurrentPage(1);
     };
 
-    const handleUploadSuccess = (jobId: string) => {
-        setUploadJobId(jobId);
-    };
-
-    const handleUploadComplete = () => {
+    const handleUploadSuccess = (result: BulkUploadResponse) => {
+        setUploadResult(result);
         refetch();
     };
 
@@ -84,14 +80,52 @@ const TransactionList: React.FC = () => {
                 </button>
             </div>
 
-            {/* Upload Status Tracker */}
-            {uploadJobId && (
-                <div className="mb-6">
-                    <UploadStatusTracker
-                        jobId={uploadJobId}
-                        onComplete={handleUploadComplete}
-                        onClose={() => setUploadJobId(null)}
-                    />
+            {/* Upload Success Alert */}
+            {uploadResult && (
+                <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-3">
+                            <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                            <div>
+                                <h3 className="text-sm font-semibold text-green-900 mb-1">
+                                    {uploadResult.message}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-4 mt-2">
+                                    <div>
+                                        <p className="text-xs text-green-700">Total Rows</p>
+                                        <p className="text-sm font-semibold text-green-900">{uploadResult.data.total_rows}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-green-700">Processed</p>
+                                        <p className="text-sm font-semibold text-green-900">{uploadResult.data.processed_rows}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-green-700">Failed</p>
+                                        <p className="text-sm font-semibold text-red-600">{uploadResult.data.failed_rows}</p>
+                                    </div>
+                                </div>
+                                {uploadResult.data.errors.length > 0 && (
+                                    <div className="mt-3">
+                                        <p className="text-xs font-medium text-green-900 mb-1">Errors:</p>
+                                        <ul className="text-xs text-green-800 space-y-1">
+                                            {uploadResult.data.errors.slice(0, 5).map((error, idx) => (
+                                                <li key={idx}>• {error}</li>
+                                            ))}
+                                            {uploadResult.data.errors.length > 5 && (
+                                                <li>• ... and {uploadResult.data.errors.length - 5} more</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setUploadResult(null)}
+                            className="text-green-600 hover:text-green-800 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             )}
 

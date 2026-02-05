@@ -3,14 +3,13 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
-import { validateEmail, validatePassword, validateName, validateMobile } from '../../utils/validation';
+import { validateEmail, validatePassword, validateName } from '../../utils/validation';
 import { APP_CONFIG } from '../../constants/app';
 import { ROUTES } from '../../constants/routes';
 
 interface SignupFormData {
     name: string;
     email: string;
-    mobile: string;
     password: string;
 }
 
@@ -86,27 +85,6 @@ const SignupPage: React.FC = () => {
                             />
                             {errors.email && (
                                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                            )}
-                        </div>
-                        <div>
-                            <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">
-                                Mobile Number
-                            </label>
-                            <input
-                                id="mobile"
-                                type="tel"
-                                className={`mt-1 block w-full rounded-lg border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-shadow`}
-                                placeholder="0123456789"
-                                {...register('mobile', {
-                                    required: 'Mobile number is required',
-                                    validate: (value) => {
-                                        const validation = validateMobile(value);
-                                        return validation.isValid || validation.error || 'Invalid mobile number';
-                                    }
-                                })}
-                            />
-                            {errors.mobile && (
-                                <p className="mt-1 text-sm text-red-600">{errors.mobile.message}</p>
                             )}
                         </div>
                         <div>

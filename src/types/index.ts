@@ -3,7 +3,6 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    mobile: string;
     created_at: string;
     updated_at: string;
 }
@@ -12,7 +11,6 @@ export interface User {
 export interface SignupRequest {
     name: string;
     email: string;
-    mobile: string;
     password: string;
 }
 
@@ -62,7 +60,6 @@ export interface CreateTransactionResponse {
     decision: TransactionDecision;
     risk_score: number;
     triggered_factors: TriggerFactor[];
-    created_at: string;
 }
 
 // Pagination
@@ -72,25 +69,14 @@ export interface PaginationParams {
 }
 
 // Bulk Upload types
-export type JobStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-
 export interface BulkUploadResponse {
-    job_id: string;
-    status: 'PENDING';
-}
-
-export interface BulkUploadProgress {
-    total: number;
-    processed: number;
-    success: number;
-    failed: number;
-    percent: number;
-}
-
-export interface BulkUploadStatusResponse {
-    job_id: string;
-    status: JobStatus;
-    progress: BulkUploadProgress;
+    message: string;
+    data: {
+        total_rows: number;
+        processed_rows: number;
+        failed_rows: number;
+        errors: string[];
+    };
 }
 
 export interface LogoutResponse {

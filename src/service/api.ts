@@ -8,12 +8,11 @@ import type {
     Transaction,
     PaginationParams,
     BulkUploadResponse,
-    BulkUploadStatusResponse,
     LogoutResponse
 } from '../types';
 
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -57,16 +56,16 @@ axiosInstance.interceptors.response.use(
 export const api = {
     // Auth endpoints
     signup: async (data: SignupRequest): Promise<SignupResponse> => {
-        const response = await axiosInstance.post<{ data: SignupResponse }>('/signup', data);
-        return response.data.data;
+        const response = await axiosInstance.post<SignupResponse>('/signup', data);
+        return response.data;
     },
 
     login: async (email: string, password: string): Promise<LoginResponse> => {
-        const response = await axiosInstance.post<{ data: LoginResponse }>('/login', {
+        const response = await axiosInstance.post<LoginResponse>('/login', {
             email,
             password,
         });
-        return response.data.data;
+        return response.data;
     },
 
     // Transaction endpoints
@@ -90,13 +89,13 @@ export const api = {
         return response.data.data;
     },
 
-    // Bulk upload endpoints
+    // Bulk upload endpoint
     uploadBulkTransactions: async (file: File): Promise<BulkUploadResponse> => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await axiosInstance.post<{ data: BulkUploadResponse }>(
-            '/api/transactions/upload',
+        const response = await axiosInstance.post<BulkUploadResponse>(
+            '/api/transactions/bulk',
             formData,
             {
                 headers: {
@@ -104,19 +103,12 @@ export const api = {
                 },
             }
         );
-        return response.data.data;
-    },
-
-    getBulkUploadStatus: async (jobId: string): Promise<BulkUploadStatusResponse> => {
-        const response = await axiosInstance.get<{ data: BulkUploadStatusResponse }>(
-            `/api/transactions/upload/${jobId}/status`
-        );
-        return response.data.data;
+        return response.data;
     },
 
     logout: async (): Promise<LogoutResponse> => {
-        const response = await axiosInstance.post<{ data: LogoutResponse }>('/api/logout');
-        return response.data.data;
+        const response = await axiosInstance.delete<LogoutResponse>('/api/logout');
+        return response.data;
     },
 };
 

@@ -3,6 +3,16 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
 import { MOCK_TRANSACTIONS } from '../../constants/app';
 
+
+const LevelCard = ({ title, description }: { title: string; description: string }) => {
+    return (
+        <div>
+            <h3 className="text-3xl font-bold mb-1">{title}</h3>
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{description}</p>
+        </div>
+    );
+}
+
 const HomePage: React.FC = () => {
     return (
         <div className="bg-white">
@@ -26,18 +36,9 @@ const HomePage: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-3 gap-8">
-                            <div>
-                                <h3 className="text-3xl font-bold mb-1"> Level 1</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Evaluates transaction risk level</p>
-                            </div>
-                            <div>
-                                <h3 className="text-3xl font-bold mb-1">Level 2</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Analyzes time-based transaction patterns</p>
-                            </div>
-                            <div>
-                                <h3 className="text-3xl font-bold mb-1">Level 3</h3>
-                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Makes final intelligent validation</p>
-                            </div>
+                            <LevelCard title="Level 1" description="Evaluates transaction risk level" />
+                            <LevelCard title="Level 2" description="Analyzes time-based transaction patterns" />
+                            <LevelCard title="Level 3" description="Makes final intelligent validation" />
                         </div>
                     </div>
 

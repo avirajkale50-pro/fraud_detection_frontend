@@ -3,10 +3,12 @@ import { Upload, X, FileText, AlertCircle } from 'lucide-react';
 import Modal from '../common/Modal';
 import { useBulkUpload } from '../../hooks/useBulkUpload';
 
+import type { BulkUploadResponse } from '../../types';
+
 interface BulkUploadModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onUploadSuccess: (jobId: string) => void;
+    onUploadSuccess: (result: BulkUploadResponse) => void;
 }
 
 const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUploadSuccess }) => {
@@ -76,10 +78,10 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
 
         try {
             const response = await uploadMutation.mutateAsync(selectedFile);
-            onUploadSuccess(response.job_id);
+            onUploadSuccess(response);
             handleClose();
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to upload file');
+            setError(err.response?.data?.message || 'Failed to upload file');
         }
     };
 
@@ -119,8 +121,8 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragging
-                            ? 'border-black bg-gray-50'
-                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                        ? 'border-black bg-gray-50'
+                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                 >
                     <input
