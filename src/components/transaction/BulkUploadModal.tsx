@@ -22,9 +22,12 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
     const validateFile = (file: File): boolean => {
         setError('');
 
-        // Check file extension
-        if (!file.name.endsWith('.csv')) {
-            setError('Please upload a CSV file');
+        // Check file extension - accept CSV and Excel files
+        const validExtensions = ['.csv', '.xls', '.xlsx'];
+        const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+
+        if (!hasValidExtension) {
+            setError('Please upload a CSV or Excel file (.csv, .xls, .xlsx)');
             return false;
         }
 
@@ -95,10 +98,11 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Upload Bulk Transactions">
             <div className="space-y-4">
-                {/* CSV Format Info */}
+                {/* File Format Info */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-blue-900 mb-2">CSV Format Requirements</h4>
-                    <p className="text-xs text-blue-800 mb-2">Your CSV file must have the following columns:</p>
+                    <h4 className="text-sm font-semibold text-blue-900 mb-2">File Format Requirements</h4>
+                    <p className="text-xs text-blue-800 mb-2">Accepted formats: <strong>CSV</strong>, <strong>Excel (.xls, .xlsx)</strong></p>
+                    <p className="text-xs text-blue-800 mb-2">Your file must have the following columns:</p>
                     <code className="block bg-white px-3 py-2 rounded text-xs font-mono text-gray-800 border border-blue-100">
                         amount,mode,created_at
                     </code>
@@ -128,7 +132,7 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".csv"
+                        accept=".csv,.xls,.xlsx"
                         onChange={handleFileInputChange}
                         className="hidden"
                     />
@@ -156,9 +160,9 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose, onUp
                         <div>
                             <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                             <p className="text-sm font-medium text-gray-900 mb-1">
-                                Drop your CSV file here, or click to browse
+                                Drop your CSV or Excel file here, or click to browse
                             </p>
-                            <p className="text-xs text-gray-500">Maximum file size: 10MB</p>
+                            <p className="text-xs text-gray-500">Supported: .csv, .xls, .xlsx (Max: 10MB)</p>
                         </div>
                     )}
                 </div>

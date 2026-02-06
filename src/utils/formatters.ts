@@ -7,7 +7,7 @@ export const formatDate = (dateString: string | undefined | null, format: 'short
     const date = new Date(dateString);
 
     if (isNaN(date.getTime())) {
-        return 'Invalid Date';
+        return 'N/A';
     }
 
     const options: Intl.DateTimeFormatOptions = format === 'short'

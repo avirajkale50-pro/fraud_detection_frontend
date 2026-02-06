@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowRight, Calendar, DollarSign, Upload, CheckCircle, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Calendar, DollarSign, Upload, CheckCircle, X, BarChart3 } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import type { Transaction, BulkUploadResponse } from '../../types';
 import DecisionBadge from '../../components/transaction/DecisionBadge';
 import RiskBadge from '../../components/transaction/RiskBadge';
@@ -71,13 +71,22 @@ const TransactionList: React.FC = () => {
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">Transaction History</h1>
                     <p className="text-gray-500">Monitor and analyze your payment transactions</p>
                 </div>
-                <button
-                    onClick={() => setIsUploadModalOpen(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
-                >
-                    <Upload className="w-4 h-4" />
-                    Upload CSV
-                </button>
+                <div className="flex items-center gap-3">
+                    <Link
+                        to={ROUTES.SUMMARY}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                        <BarChart3 className="w-4 h-4" />
+                        View Summary
+                    </Link>
+                    <button
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                    >
+                        <Upload className="w-4 h-4" />
+                        Upload File
+                    </button>
+                </div>
             </div>
 
             {/* Upload Success Alert */}

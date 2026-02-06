@@ -8,7 +8,8 @@ import type {
     Transaction,
     PaginationParams,
     BulkUploadResponse,
-    LogoutResponse
+    LogoutResponse,
+    TransactionSummary
 } from '../types';
 
 
@@ -104,6 +105,12 @@ export const api = {
             }
         );
         return response.data;
+    },
+
+    // Transaction summary endpoint
+    getTransactionSummary: async (): Promise<TransactionSummary> => {
+        const response = await axiosInstance.get<{ data: TransactionSummary }>('/api/transactions/summary');
+        return response.data.data;
     },
 
     logout: async (): Promise<LogoutResponse> => {

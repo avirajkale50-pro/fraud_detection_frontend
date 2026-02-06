@@ -83,6 +83,20 @@ export interface LogoutResponse {
     message: string;
 }
 
+// Transaction Summary types
+export interface TransactionSummary {
+    total_transactions: number;
+    allowed_transactions: number;
+    flagged_transactions: number;
+    blocked_transactions: number;
+    triggered_factors_breakdown: Record<string, number>;
+    recent_daily_activity: Record<string, number>;
+}
+
+export interface TransactionSummaryResponse {
+    data: TransactionSummary;
+}
+
 // Error response
 export interface ErrorResponse {
     error: string;
