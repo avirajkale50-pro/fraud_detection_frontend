@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import { APP_CONFIG } from '../../constants/app';
 import { ROUTES } from '../../constants/routes';
@@ -32,6 +32,13 @@ const LoginPage: React.FC = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-sm border border-gray-100">
+                <Link
+                    to={ROUTES.HOME}
+                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors group"
+                >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    Back to home
+                </Link>
                 <div className="text-center">
                     <Link to={ROUTES.HOME} className="inline-flex items-center gap-2 group mb-6">
                         <div className="bg-black text-white p-1 rounded-md">

@@ -8,7 +8,6 @@ interface ErrorStateProps {
     defaultMessage?: string;
 }
 
-
 const ErrorState: React.FC<ErrorStateProps> = ({
     error,
     onRetry,
