@@ -22,15 +22,15 @@ const Layout: React.FC = () => {
                         <span className="text-xl font-bold tracking-tight text-black">{APP_CONFIG.NAME}</span>
                     </Link>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         {isAuthenticated ? (
                             <>
                                 <button
                                     onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all"
+                                    className="flex items-center gap-2 text-sm font-medium px-3 sm:px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    Create Transaction
+                                    <span className="hidden sm:inline">Create Transaction</span>
                                 </button>
                                 <UserProfileDropdown />
                             </>

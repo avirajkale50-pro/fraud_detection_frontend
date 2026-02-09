@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true); // Start as true to check auth on mount
     const [user, setUser] = useState<UserInfo | null>(null);
 
     // Check if user is already authenticated on mount
@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 localStorage.removeItem('token');
             }
         }
+        setIsLoading(false); // Done checking auth
     }, []);
 
     const login = async (email: string, password: string) => {

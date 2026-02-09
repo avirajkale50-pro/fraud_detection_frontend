@@ -7,5 +7,6 @@ export const useTransactions = (params?: PaginationParams) => {
     return useQuery({
         queryKey: ['transactions', params?.limit, params?.offset],
         queryFn: () => api.getTransactions(params),
+        placeholderData: (previousData) => previousData, // Keep previous data while loading new page
     });
 };

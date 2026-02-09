@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1770615266896" clover="3.2.0">
+  <project timestamp="1770615266896" name="All files">
+    <metrics statements="17" coveredstatements="13" conditionals="15" coveredconditionals="12" methods="4" coveredmethods="2" elements="36" coveredelements="27" complexity="0" loc="17" ncloc="17" packages="1" files="1" classes="1"/>
+    <file name="formatters.ts" path="/home/avirajkale50/Github/fraud_detection_with_ruby/fraud_detection_frontend/src/utils/formatters.ts">
+      <metrics statements="17" coveredstatements="13" conditionals="15" coveredconditionals="12" methods="4" coveredmethods="2"/>
+      <line num="2" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="3" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="7" count="2" type="stmt"/>
+      <line num="9" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="10" count="1" type="stmt"/>
+      <line num="13" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="30" count="4" type="stmt"/>
+      <line num="33" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="34" count="3" type="cond" truecount="5" falsecount="0"/>
+      <line num="35" count="2" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+      <line num="44" count="1" type="stmt"/>
+      <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="46" count="0" type="stmt"/>
+      <line num="49" count="0" type="stmt"/>
+      <line num="53" count="0" type="stmt"/>
+    </file>
+  </project>
+</coverage>

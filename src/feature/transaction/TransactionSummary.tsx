@@ -93,27 +93,27 @@ const TransactionSummary: React.FC = () => {
         .sort((a, b) => a.date.localeCompare(b.date));
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="space-y-6">
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
+                <div className="flex items-center gap-3 mb-6 sm:mb-8">
                     <div className="p-2 bg-black rounded-lg">
-                        <BarChart3 className="w-6 h-6 text-white" />
+                        <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Transaction Summary</h1>
-                        <p className="text-gray-500">Overview of your transaction activity</p>
+                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">Transaction Summary</h1>
+                        <p className="text-gray-500 text-sm sm:text-base">Overview of your transaction activity</p>
                     </div>
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {stats.map((stat) => {
                         const Icon = stat.icon;
                         return (
                             <div
                                 key={stat.label}
-                                className={`${stat.bgColor} border border-gray-200 rounded-lg p-6 transition-all hover:shadow-md`}
+                                className={`${stat.bgColor} border border-gray-200 rounded-lg p-5 sm:p-6 transition-all hover:shadow-md`}
                             >
                                 <div className="flex items-center justify-between mb-3">
                                     <div className={`p-2 rounded-lg ${stat.color}`}>
@@ -121,7 +121,7 @@ const TransactionSummary: React.FC = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
+                                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
                                     <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                                 </div>
                             </div>
@@ -133,12 +133,12 @@ const TransactionSummary: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Transaction Decisions Pie Chart */}
                     {pieData.length > 0 && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <ShieldCheck className="w-5 h-5 text-gray-700" />
-                                <h2 className="text-lg font-semibold text-gray-900">Transaction Decisions</h2>
+                                <h2 className="text-base sm:text-lg font-semibold text-gray-900">Transaction Decisions</h2>
                             </div>
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                                 <PieChart>
                                     <Pie
                                         data={pieData}
@@ -166,12 +166,12 @@ const TransactionSummary: React.FC = () => {
 
                     {/* Triggered Factors Bar Chart */}
                     {triggeredFactorsData.length > 0 && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp className="w-5 h-5 text-gray-700" />
-                                <h2 className="text-lg font-semibold text-gray-900">Triggered Factors</h2>
+                                <h2 className="text-base sm:text-lg font-semibold text-gray-900">Triggered Factors</h2>
                             </div>
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                                 <BarChart data={triggeredFactorsData}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis
@@ -179,9 +179,10 @@ const TransactionSummary: React.FC = () => {
                                         angle={-45}
                                         textAnchor="end"
                                         height={80}
-                                        fontSize={12}
+                                        fontSize={10}
+                                        className="sm:text-xs"
                                     />
-                                    <YAxis />
+                                    <YAxis fontSize={10} className="sm:text-xs" />
                                     <Tooltip />
                                     <Bar dataKey="count" fill="#f59e0b" />
                                 </BarChart>
@@ -192,12 +193,12 @@ const TransactionSummary: React.FC = () => {
 
                 {/* Daily Activity Area Chart */}
                 {dailyActivityData.length > 0 && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <Activity className="w-5 h-5 text-gray-700" />
-                            <h2 className="text-lg font-semibold text-gray-900">Recent Daily Activity</h2>
+                            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Daily Activity</h2>
                         </div>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                             <AreaChart data={dailyActivityData}>
                                 <defs>
                                     <linearGradient id="colorTransactions" x1="0" y1="0" x2="0" y2="1">
@@ -206,8 +207,8 @@ const TransactionSummary: React.FC = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" fontSize={12} />
-                                <YAxis />
+                                <XAxis dataKey="date" fontSize={10} className="sm:text-xs" />
+                                <YAxis fontSize={10} className="sm:text-xs" />
                                 <Tooltip />
                                 <Legend />
                                 <Area

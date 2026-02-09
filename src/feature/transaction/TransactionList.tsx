@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Calendar, DollarSign, Upload, CheckCircle, X, BarChart3 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Transaction, BulkUploadResponse } from '../../types';
 import DecisionBadge from '../../components/transaction/DecisionBadge';
 import RiskBadge from '../../components/transaction/RiskBadge';
@@ -11,9 +12,11 @@ import PaginationControls from '../../components/common/PaginationControls';
 import BulkUploadModal from '../../components/transaction/BulkUploadModal';
 import { formatDate, formatCurrency, formatEnumValue } from '../../utils/formatters';
 import { ROUTES } from '../../constants/routes';
+import { api } from '../../service/api';
 
 const TransactionList: React.FC = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +36,17 @@ const TransactionList: React.FC = () => {
 
     // Ensure transactions is always an array
     const transactions = Array.isArray(data) ? data : [];
+
+    // Prefetch next page for instant navigation
+    useEffect(() => {
+        if (transactions.length === pageSize) {
+            const nextOffset = currentPage * pageSize;
+            queryClient.prefetchQuery({
+                queryKey: ['transactions', pageSize, nextOffset],
+                queryFn: () => api.getTransactions({ limit: pageSize, offset: nextOffset }),
+            });
+        }
+    }, [currentPage, pageSize, transactions.length, queryClient]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -64,24 +78,24 @@ const TransactionList: React.FC = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {/* Header */}
-            <div className="mb-8 flex items-center justify-between">
-                <div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Transaction History</h1>
-                    <p className="text-gray-500">Monitor and analyze your payment transactions</p>
+            <div className="mb-6 sm:mb-8">
+                <div className="mb-4 sm:mb-0">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Transaction History</h1>
+                    <p className="text-gray-500 text-sm sm:text-base">Monitor and analyze your payment transactions</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4">
                     <Link
                         to={ROUTES.SUMMARY}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                     >
                         <BarChart3 className="w-4 h-4" />
                         View Summary
                     </Link>
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
                     >
                         <Upload className="w-4 h-4" />
                         Upload File
@@ -99,7 +113,7 @@ const TransactionList: React.FC = () => {
                                 <h3 className="text-sm font-semibold text-green-900 mb-1">
                                     {uploadResult.message}
                                 </h3>
-                                <div className="grid grid-cols-3 gap-4 mt-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-2">
                                     <div>
                                         <p className="text-xs text-green-700">Total Rows</p>
                                         <p className="text-sm font-semibold text-green-900">{uploadResult.data.total_rows}</p>
@@ -154,14 +168,14 @@ const TransactionList: React.FC = () => {
                             <div
                                 key={transaction.id}
                                 onClick={() => navigate(ROUTES.TRANSACTION_DETAIL(transaction.id))}
-                                className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group"
+                                className="p-4 sm:p-6 hover:bg-gray-50 transition-colors cursor-pointer group"
                             >
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     {/* Left Side */}
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-3">
+                                        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap">
                                             {transaction.amount !== undefined && transaction.amount !== null && (
-                                                <h3 className="text-lg font-semibold text-gray-900">
+                                                <h3 className="text-lg sm:text-lg font-semibold text-gray-900">
                                                     {formatCurrency(transaction.amount)}
                                                 </h3>
                                             )}
@@ -176,7 +190,7 @@ const TransactionList: React.FC = () => {
                                                 </h3>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                                        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 flex-wrap">
                                             <div className="flex items-center gap-1.5">
                                                 <Calendar className="w-4 h-4" />
                                                 {formatDate(transaction.created_at)}
@@ -187,13 +201,12 @@ const TransactionList: React.FC = () => {
                                     </div>
 
                                     {/* Right Side */}
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right space-y-2">
+                                    <div className="flex items-center gap-3 sm:gap-4">
+                                        <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
                                             <RiskBadge score={transaction.risk_score} />
-                                            <br />
                                             <DecisionBadge decision={transaction.decision} />
                                         </div>
-                                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
+                                        <ArrowRight className="hidden sm:block w-5 h-5 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
                                     </div>
                                 </div>
 

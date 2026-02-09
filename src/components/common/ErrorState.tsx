@@ -8,10 +8,7 @@ interface ErrorStateProps {
     defaultMessage?: string;
 }
 
-/**
- * Reusable error state component
- * Displays a centered error message with optional retry button
- */
+
 const ErrorState: React.FC<ErrorStateProps> = ({
     error,
     onRetry,

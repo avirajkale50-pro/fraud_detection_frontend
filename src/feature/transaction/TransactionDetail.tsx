@@ -30,33 +30,33 @@ const TransactionDetail: React.FC = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {/* Back Button */}
             <button
                 onClick={() => navigate(ROUTES.DASHBOARD)}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors min-h-[44px]"
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Transactions
             </button>
 
             {/* Header */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6">
-                <div className="flex items-start justify-between mb-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-8 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                             {formatCurrency(transaction.amount)}
                         </h1>
-                        <p className="text-gray-500">Transaction #{transaction.id}</p>
+                        <p className="text-gray-500 text-sm sm:text-base">Transaction #{transaction.id}</p>
                     </div>
-                    <div className="text-right space-y-2 flex flex-col gap-2">
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
                         <DecisionBadge decision={transaction.decision} />
                         <RiskBadge score={transaction.risk_score} />
                     </div>
                 </div>
 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                             <CreditCard className="w-5 h-5 text-gray-600" />
@@ -88,8 +88,8 @@ const TransactionDetail: React.FC = () => {
             </div>
 
             {/* Risk Analysis */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-8 mb-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <TrendingUp className="w-5 h-5" />
                     Risk Analysis
                 </h2>
@@ -98,7 +98,7 @@ const TransactionDetail: React.FC = () => {
                 <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-gray-700">Overall Risk Score</span>
-                        <span className="text-2xl font-bold text-gray-900">{transaction.risk_score}/100</span>
+                        <span className="text-xl sm:text-2xl font-bold text-gray-900">{transaction.risk_score}/100</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
@@ -123,7 +123,7 @@ const TransactionDetail: React.FC = () => {
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Amount Deviation</span>
-                                        <span className="text-lg font-bold text-gray-900">{transaction.amount_deviation_score}</span>
+                                        <span className="text-base sm:text-lg font-bold text-gray-900">{transaction.amount_deviation_score}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                         <div
@@ -137,7 +137,7 @@ const TransactionDetail: React.FC = () => {
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Frequency Deviation</span>
-                                        <span className="text-lg font-bold text-gray-900">{transaction.frequency_deviation_score}</span>
+                                        <span className="text-base sm:text-lg font-bold text-gray-900">{transaction.frequency_deviation_score}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                         <div
@@ -151,7 +151,7 @@ const TransactionDetail: React.FC = () => {
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Mode Deviation</span>
-                                        <span className="text-lg font-bold text-gray-900">{transaction.mode_deviation_score}</span>
+                                        <span className="text-base sm:text-lg font-bold text-gray-900">{transaction.mode_deviation_score}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                         <div
@@ -165,7 +165,7 @@ const TransactionDetail: React.FC = () => {
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Time Deviation</span>
-                                        <span className="text-lg font-bold text-gray-900">{transaction.time_deviation_score}</span>
+                                        <span className="text-base sm:text-lg font-bold text-gray-900">{transaction.time_deviation_score}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                         <div
@@ -181,13 +181,13 @@ const TransactionDetail: React.FC = () => {
 
             {/* Triggered Factors */}
             {transaction.triggered_factors && transaction.triggered_factors.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-200 p-8">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Triggered Risk Factors</h2>
-                    <div className="flex flex-wrap gap-3">
+                <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-8">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Triggered Risk Factors</h2>
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                         {transaction.triggered_factors.map((factor) => (
                             <div
                                 key={factor}
-                                className="px-4 py-2 bg-orange-50 text-orange-800 text-sm font-medium rounded-lg border border-orange-200"
+                                className="px-3 sm:px-4 py-2 bg-orange-50 text-orange-800 text-xs sm:text-sm font-medium rounded-lg border border-orange-200"
                             >
                                 {formatEnumValue(factor)}
                             </div>
