@@ -1,9 +1,15 @@
 import React from 'react';
 import { useTransactionSummary } from '../../hooks/useTransactionSummary';
-import { BarChart3, TrendingUp, AlertTriangle, ShieldCheck, Activity } from 'lucide-react';
+import { BarChart3, TrendingUp, ShieldCheck, Activity } from 'lucide-react';
 import { formatEnumValue } from '../../utils/formatters';
 import LoadingState from '../../components/common/LoadingState';
 import ErrorState from '../../components/common/ErrorState';
+import {
+    TRANSACTION_STAT_CARDS,
+    TRANSACTION_DECISION_COLORS,
+    BAR_CHART_COLORS,
+    AREA_CHART_GRADIENT,
+} from '../../constants/charts';
 import {
     PieChart,
     Pie,
@@ -38,43 +44,18 @@ const TransactionSummary: React.FC = () => {
         return null;
     }
 
-    const stats = [
-        {
-            label: 'Total Transactions',
-            value: summary.total_transactions,
-            icon: Activity,
-            color: 'bg-blue-100 text-blue-600',
-            bgColor: 'bg-blue-50',
-        },
-        {
-            label: 'Allowed',
-            value: summary.allowed_transactions,
-            icon: ShieldCheck,
-            color: 'bg-green-100 text-green-600',
-            bgColor: 'bg-green-50',
-        },
-        {
-            label: 'Flagged',
-            value: summary.flagged_transactions,
-            icon: AlertTriangle,
-            color: 'bg-orange-100 text-orange-600',
-            bgColor: 'bg-orange-50',
-        },
-        {
-            label: 'Blocked',
-            value: summary.blocked_transactions,
-            icon: ShieldCheck,
-            color: 'bg-red-100 text-red-600',
-            bgColor: 'bg-red-50',
-        },
-    ];
+    // Map stat cards with dynamic values from summary
+    const stats = TRANSACTION_STAT_CARDS.map((config) => ({
+        ...config,
+        value: summary[config.valueKey],
+    }));
 
     // Prepare data for pie chart (transaction decisions)
-    const pieData = [
-        { name: 'Allowed', value: summary.allowed_transactions, color: '#10b981' },
-        { name: 'Flagged', value: summary.flagged_transactions, color: '#f59e0b' },
-        { name: 'Blocked', value: summary.blocked_transactions, color: '#ef4444' },
-    ].filter(item => item.value > 0);
+    const pieData = TRANSACTION_DECISION_COLORS.map((config) => ({
+        name: config.name,
+        value: summary[config.valueKey],
+        color: config.color,
+    })).filter((item) => item.value > 0);
 
     // Prepare data for triggered factors bar chart
     const triggeredFactorsData = Object.entries(summary.triggered_factors_breakdown)
@@ -83,6 +64,8 @@ const TransactionSummary: React.FC = () => {
             count: count,
         }))
         .sort((a, b) => b.count - a.count);
+
+
 
     // Prepare data for daily activity area chart
     const dailyActivityData = Object.entries(summary.recent_daily_activity)
@@ -176,15 +159,19 @@ const TransactionSummary: React.FC = () => {
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis
                                         dataKey="name"
-                                        angle={-45}
-                                        textAnchor="end"
+                                        angle={0}
+                                        textAnchor="middle"
                                         height={80}
                                         fontSize={10}
                                         className="sm:text-xs"
                                     />
                                     <YAxis fontSize={10} className="sm:text-xs" />
                                     <Tooltip />
-                                    <Bar dataKey="count" fill="#f59e0b" />
+                                    <Bar dataKey="count">
+                                        {triggeredFactorsData.map((_, index) => (
+                                            <Cell key={`cell-${index}`} fill={BAR_CHART_COLORS[index % BAR_CHART_COLORS.length]} />
+                                        ))}
+                                    </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -201,9 +188,9 @@ const TransactionSummary: React.FC = () => {
                         <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                             <AreaChart data={dailyActivityData}>
                                 <defs>
-                                    <linearGradient id="colorTransactions" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                    <linearGradient id={AREA_CHART_GRADIENT.id} x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor={AREA_CHART_GRADIENT.color} stopOpacity={AREA_CHART_GRADIENT.startOpacity} />
+                                        <stop offset="95%" stopColor={AREA_CHART_GRADIENT.color} stopOpacity={AREA_CHART_GRADIENT.endOpacity} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -214,9 +201,9 @@ const TransactionSummary: React.FC = () => {
                                 <Area
                                     type="monotone"
                                     dataKey="transactions"
-                                    stroke="#3b82f6"
+                                    stroke={AREA_CHART_GRADIENT.color}
                                     fillOpacity={1}
-                                    fill="url(#colorTransactions)"
+                                    fill={`url(#${AREA_CHART_GRADIENT.id})`}
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
